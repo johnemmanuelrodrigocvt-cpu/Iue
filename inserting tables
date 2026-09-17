@@ -1,0 +1,100 @@
+-- Disable foreign keys temporarily for a clean reset
+PRAGMA foreign_keys = OFF;
+
+DROP TABLE IF EXISTS Order_Items;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Customers;
+DROP TABLE IF EXISTS Products;
+DROP TABLE IF EXISTS Categories;
+
+PRAGMA foreign_keys = ON;
+
+-- Re-create Tables
+CREATE TABLE Categories (
+    category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE Products (
+    product_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_name VARCHAR(150) NOT NULL,
+    category_id INT,
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id)
+);
+
+CREATE TABLE Customers (
+    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    shipping_address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Orders (
+    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INT,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'Pending',
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
+
+CREATE TABLE Order_Items (
+    order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+
+-- =========================================================
+-- SQL QUERIES FOR INSERTING RECORDS (5+ Rows Each)
+-- =========================================================
+
+-- 1. Insert into Categories
+INSERT INTO Categories (category_name, description) VALUES
+('Electronics', 'Gadgets, computers, and display screens'),
+('Audio', 'Headphones, speakers, and sound equipment'),
+('Peripherals', 'Keyboards, mice, and computer accessories'),
+('Storage', 'External hard drives, SSDs, and flash drives'),
+('Wearables', 'Smartwatches and fitness trackers');
+
+-- 2. Insert into Products
+INSERT INTO Products (product_name, category_id, price, stock_quantity) VALUES
+('Mechanical Keyboard', 3, 89.99, 50),
+('Wireless Gaming Mouse', 3, 49.99, 100),
+('Noise Canceling Headphones', 2, 199.99, 30),
+('4K Gaming Monitor', 1, 349.99, 15),
+('1TB Portable NVMe SSD', 4, 119.99, 40);
+
+-- 3. Insert into Customers
+INSERT INTO Customers (full_name, email, phone, shipping_address) VALUES
+('Juan Dela Cruz', 'juan@example.com', '09171234567', '123 Manila St, Manila'),
+('Maria Santos', 'maria@example.com', '09189876543', '456 Quezon Ave, Quezon City'),
+('Mark Reyes', 'mark@example.com', '09191112222', '789 Makati Ave, Makati'),
+('Anne Curtis', 'anne@example.com', '09203334444', '101 Pasig Rd, Pasig'),
+('Jose Rizal', 'jose@example.com', '09215556666', '202 Laguna St, Calamba');
+
+-- 4. Insert into Orders
+INSERT INTO Orders (customer_id, total_amount, status) VALUES
+(1, 139.98, 'Shipped'),
+(2, 199.99, 'Delivered'),
+(1, 349.99, 'Pending'),
+(3, 119.99, 'Shipped'),
+(4, 89.99, 'Processing');
+
+-- 5. Insert into Order_Items
+INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES
+(1, 1, 1, 89.99),
+(1, 2, 1, 49.99),
+(2, 3, 1, 199.99),
+(3, 4, 1, 349.99),
+(4, 5, 1, 119.99);
