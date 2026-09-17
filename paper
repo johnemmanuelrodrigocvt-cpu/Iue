@@ -1,4 +1,4 @@
--- Disable foreign keys temporarily to allow clean table removal
+-- Disable foreign key constraints temporarily for clean reset
 PRAGMA foreign_keys = OFF;
 
 DROP TABLE IF EXISTS Order_Items;
@@ -7,10 +7,12 @@ DROP TABLE IF EXISTS Customers;
 DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS Categories;
 
--- Re-enable foreign keys
 PRAGMA foreign_keys = ON;
 
--- 1. CREATE TABLES
+-- =========================================================
+-- 1. SQL QUERIES FOR CREATING TABLES
+-- =========================================================
+
 CREATE TABLE Categories (
     category_id INTEGER PRIMARY KEY AUTOINCREMENT,
     category_name VARCHAR(100) NOT NULL,
@@ -55,45 +57,81 @@ CREATE TABLE Order_Items (
     FOREIGN KEY (product_id) REFERENCES Products(product_id)
 );
 
--- 2. INSERT RECORDS
+-- =========================================================
+-- 2. SQL QUERIES FOR INSERTING RECORDS
+-- =========================================================
+
 INSERT INTO Categories (category_name, description) VALUES
-('Electronics', 'Gadgets, computers, and electronic accessories'),
+('Electronics', 'Gadgets, computers, and display screens'),
 ('Audio', 'Headphones, speakers, and sound equipment'),
-('Peripherals', 'Keyboards, mice, and monitor arms');
+('Peripherals', 'Keyboards, mice, and computer accessories');
 
 INSERT INTO Products (product_name, category_id, price, stock_quantity) VALUES
 ('Mechanical Keyboard', 3, 89.99, 50),
 ('Wireless Gaming Mouse', 3, 49.99, 100),
 ('Noise Canceling Headphones', 2, 199.99, 30),
-('4K Gaming Monitor', 1, 349.99, 15);
+('4K Gaming Monitor', 1, 349.99, 15),
+('USB-C Condenser Microphone', 2, 129.99, 25);
 
 INSERT INTO Customers (full_name, email, phone, shipping_address) VALUES
 ('Juan Dela Cruz', 'juan@example.com', '09171234567', '123 Manila St, Manila'),
-('Maria Santos', 'maria@example.com', '09189876543', '456 Quezon Ave, Quezon City');
+('Maria Santos', 'maria@example.com', '09189876543', '456 Quezon Ave, Quezon City'),
+('Mark Reyes', 'mark@example.com', '09191112222', '789 Makati Ave, Makati');
 
 INSERT INTO Orders (customer_id, total_amount, status) VALUES
 (1, 139.98, 'Shipped'),
-(2, 199.99, 'Delivered');
+(2, 199.99, 'Delivered'),
+(1, 349.99, 'Pending'),
+(3, 129.99, 'Shipped');
 
 INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES
 (1, 1, 1, 89.99),
 (1, 2, 1, 49.99),
-(2, 3, 1, 199.99);
+(2, 3, 1, 199.99),
+(3, 4, 1, 349.99),
+(4, 5, 1, 129.99);
 
--- 3. READ / QUERY RECORDS
-SELECT p.product_id, p.product_name, c.category_name, p.price, p.stock_quantity
+-- =========================================================
+-- 3. SQL DEMONSTRATION QUERIES (WHERE, JOIN, GROUP BY, AGGREGATES)
+-- =========================================================
+
+-- Query 1 (WHERE & JOIN): List all products priced above $100 with their category names
+SELECT 
+    p.product_id, 
+    p.product_name, 
+    c.category_name, 
+    p.price
 FROM Products p
-JOIN Categories c ON p.category_id = c.category_id;
+JOIN Categories c ON p.category_id = c.category_id
+WHERE p.price > 100.00;
 
+-- Query 2 (JOIN & WHERE): Show order details for orders that are already 'Shipped'
 SELECT 
     o.order_id,
     cust.full_name AS customer_name,
     p.product_name,
     oi.quantity,
-    oi.unit_price,
-    o.total_amount,
     o.status
 FROM Orders o
 JOIN Customers cust ON o.customer_id = cust.customer_id
 JOIN Order_Items oi ON o.order_id = oi.order_id
-JOIN Products p ON oi.product_id = p.product_id;
+JOIN Products p ON oi.product_id = p.product_id
+WHERE o.status = 'Shipped';
+
+-- Query 3 (GROUP BY & AGGREGATE): Calculate the total spending and order count per customer
+SELECT 
+    cust.full_name AS customer_name,
+    COUNT(o.order_id) AS total_orders_placed,
+    SUM(o.total_amount) AS total_amount_spent
+FROM Customers cust
+JOIN Orders o ON cust.customer_id = o.customer_id
+GROUP BY cust.customer_id, cust.full_name;
+
+-- Query 4 (GROUP BY & AGGREGATE): Count total products and average price per category
+SELECT 
+    c.category_name,
+    COUNT(p.product_id) AS total_products,
+    ROUND(AVG(p.price), 2) AS average_price
+FROM Categories c
+LEFT JOIN Products p ON c.category_id = p.category_id
+GROUP BY c.category_id, c.category_name;
