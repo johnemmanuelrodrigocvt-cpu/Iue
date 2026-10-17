@@ -1,1 +1,337 @@
+-- 1. Clean up existing table if re-running
+DROP TABLE IF EXISTS grocery_items;
+
+-- 2. Create Table (SQLite Syntax)
+CREATE TABLE grocery_items (
+    item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_name TEXT NOT NULL,
+    brand_name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price REAL NOT NULL,
+    quantity INTEGER DEFAULT 0,
+    expiration_date TEXT NOT NULL,
+    is_available INTEGER DEFAULT 1
+);
+
+-- 3. Insert Authentic Thai Grocery Items
+INSERT INTO grocery_items (item_name, brand_name, category, price, quantity, expiration_date, is_available) VALUES
+('Tom Yum Goong Instant Noodles', 'Mama', 'Noodles', 15.50, 150, '2027-06-15', 1),
+('Crispy Seaweed Original', 'Tao Kae Noi', 'Snacks', 45.00, 80, '2027-01-20', 1),
+('100% Passion Fruit Juice', 'Doi Kham', 'Beverages', 68.00, 45, '2026-11-30', 1),
+('Traditional Thai Tea Mix', 'ChaTraMue', 'Beverages', 145.00, 60, '2028-02-10', 1),
+('Green Curry Paste', 'Mae Ploy', 'Condiments', 35.00, 90, '2027-09-05', 1);
+
+-- 4. View All Records
+SELECT * FROM grocery_items;
+
+3. SCHEMA + DATABASE RECORDS 
+
+DROP TABLE IF EXISTS grocery_items;
+
+CREATE TABLE grocery_items (
+    item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_name TEXT NOT NULL,
+    brand_name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price REAL NOT NULL,
+    quantity INTEGER DEFAULT 0,
+    expiration_date TEXT NOT NULL,
+    is_available INTEGER DEFAULT 1
+);
+
+INSERT INTO grocery_items (item_name, brand_name, category, price, quantity, expiration_date, is_available) VALUES
+('Tom Yum Goong Instant Noodles', 'Mama', 'Noodles', 15.50, 150, '2027-06-15', 1),
+('Crispy Seaweed Original', 'Tao Kae Noi', 'Snacks', 45.00, 80, '2027-01-20', 1),
+('100% Passion Fruit Juice', 'Doi Kham', 'Beverages', 68.00, 45, '2026-11-30', 1),
+('Traditional Thai Tea Mix', 'ChaTraMue', 'Beverages', 145.00, 60, '2028-02-10', 1),
+('Green Curry Paste', 'Mae Ploy', 'Condiments', 35.00, 90, '2027-09-05', 1),
+('Moo Deng Spicy Squid Snack', 'Bento', 'Snacks', 20.00, 200, '2027-04-12', 1),
+('Minced Pork Flavour Noodles', 'Wai Wai', 'Noodles', 14.00, 120, '2027-05-18', 1),
+('Tom Yum Nam Kon Noodles', 'Yum Yum', 'Noodles', 14.50, 110, '2027-07-22', 1),
+('Peanut Coated Salted', 'Koh-Kae', 'Snacks', 30.00, 75, '2027-03-10', 1),
+('Tomato Juice with Honey', 'Doi Kham', 'Beverages', 42.00, 50, '2026-12-05', 1),
+('Red Curry Paste', 'Mae Ploy', 'Condiments', 35.00, 85, '2027-10-15', 1),
+('Massaman Curry Paste', 'Lobo', 'Condiments', 28.00, 65, '2028-01-05', 1),
+('Panang Curry Paste', 'Lobo', 'Condiments', 28.00, 70, '2028-01-08', 1),
+('Instant Congee Pork Flavour', 'Knorr Thailand', 'Cereals', 22.00, 90, '2027-02-25', 1),
+('Chili Paste with Soy Bean Oil', 'Maesri', 'Condiments', 45.00, 55, '2028-06-14', 1),
+('Roasted Sweet Chili Squid', 'Bento', 'Snacks', 20.00, 150, '2027-05-01', 1),
+('Coffee Mix 3in1 Espresso', 'Birdy', 'Beverages', 75.00, 100, '2027-11-12', 1),
+('Energy Drink Original', 'M-150', 'Beverages', 12.00, 300, '2027-08-30', 1),
+('Energy Drink Red Bull', 'Krating Daeng', 'Beverages', 15.00, 250, '2027-09-19', 1),
+('Banana Chips Sweet', 'King Bridge', 'Snacks', 50.00, 40, '2026-10-30', 1),
+('Coconut Milk UHT', 'Aroy-D', 'Dairy/Canned', 40.00, 110, '2028-04-01', 1),
+('Fish Sauce Golden Boy', 'Golden Boy', 'Condiments', 55.00, 80, '2029-01-01', 1),
+('Oyster Sauce', 'Megachef', 'Condiments', 65.00, 60, '2028-12-31', 1),
+('Tamarind Paste', 'Hand Brand', 'Condiments', 45.00, 45, '2027-12-01', 1),
+('Jasmine Rice 5kg', 'Royal Umbrella', 'Grains', 280.00, 30, '2027-12-31', 1),
+('Sticky Rice 2kg', 'Sanook', 'Grains', 120.00, 40, '2027-11-30', 1),
+('Rice Vermicelli Dried', 'Double Dragon', 'Noodles', 32.00, 90, '2028-05-15', 1),
+('Flat Rice Noodles', 'Hong Huat', 'Noodles', 35.00, 85, '2027-08-20', 1),
+('Crispy Seaweed Spicy', 'Tao Kae Noi', 'Snacks', 45.00, 95, '2027-02-15', 1),
+('Green Tea Mix', 'ChaTraMue', 'Beverages', 150.00, 50, '2028-03-20', 1),
+('Roselle Juice Extract', 'Doi Kham', 'Beverages', 60.00, 40, '2026-11-15', 1),
+('Longan Juice in Syrup', 'Malee', 'Beverages', 50.00, 35, '2027-04-10', 1),
+('Lychee in Syrup', 'Tipco', 'Canned Fruit', 65.00, 30, '2027-07-11', 1),
+('Durian Chips Salted', 'Chanthaburi', 'Snacks', 120.00, 25, '2026-12-20', 1),
+('Mango Dried Sweet', 'Sunsweet', 'Snacks', 85.00, 60, '2027-06-01', 1),
+('Pineapple Jam Spread', 'Doi Kham', 'Spreads', 55.00, 45, '2027-09-10', 1),
+('Strawberry Jam', 'Doi Kham', 'Spreads', 55.00, 40, '2027-09-12', 1),
+('Honey Pure 100%', 'Bee Products', 'Spreads', 160.00, 20, '2029-01-01', 1),
+('Soy Sauce Dark', 'Healthy Boy', 'Condiments', 38.00, 70, '2028-08-10', 1),
+('Soy Sauce Light', 'Healthy Boy', 'Condiments', 38.00, 75, '2028-08-10', 1),
+('Seasoning Sauce', 'Golden Mountain', 'Condiments', 42.00, 90, '2028-10-05', 1),
+('Chili Paste in Oil', 'Prig Kpow', 'Condiments', 50.00, 50, '2027-11-30', 1),
+('Crispy Pork Rind', 'Mae Pranom', 'Snacks', 60.00, 65, '2026-11-01', 1),
+('Sweet Chili Sauce for Chicken', 'Mae Pranom', 'Condiments', 58.00, 100, '2028-04-15', 1),
+('Sriracha Hot Chili Sauce', 'Healthy Boy', 'Condiments', 52.00, 110, '2028-07-20', 1),
+('Instant Rice Porridge Pork', 'Mama', 'Cereals', 18.00, 130, '2027-03-15', 1),
+('Duck Flavor Instant Noodles', 'Mama', 'Noodles', 15.50, 140, '2027-06-20', 1),
+('Yentafo Flavor Noodles', 'Mama', 'Noodles', 16.00, 90, '2027-05-10', 1),
+('Pork Basil Flavor Noodles', 'Wai Wai', 'Noodles', 14.50, 100, '2027-04-20', 1),
+('Shrimp Creamy Tom Yum Noodles', 'Mama', 'Noodles', 17.00, 160, '2027-07-01', 1),
+('Peanut Coated BBQ', 'Koh-Kae', 'Snacks', 30.00, 80, '2027-03-12', 1),
+('Peanut Coated Coffee', 'Koh-Kae', 'Snacks', 30.00, 60, '2027-03-15', 1),
+('Green Pea Snacks', 'Koh-Kae', 'Snacks', 25.00, 90, '2027-04-05', 1),
+('Coconut Crispy Rolls', 'Siam', 'Snacks', 70.00, 50, '2027-01-15', 1),
+('Taro Fish Snack Original', 'Taro', 'Snacks', 22.00, 140, '2027-02-10', 1),
+('Taro Fish Snack Barbecue', 'Taro', 'Snacks', 22.00, 135, '2027-02-12', 1),
+('Taro Fish Snack Hot Chili', 'Taro', 'Snacks', 22.00, 125, '2027-02-15', 1),
+('Chrysanthemum Herbal Drink', 'Doi Kham', 'Beverages', 45.00, 55, '2026-12-10', 1),
+('Bael Fruit Herbal Drink', 'Doi Kham', 'Beverages', 45.00, 50, '2026-12-12', 1),
+('Guava Juice', 'Tipco', 'Beverages', 62.00, 45, '2026-11-25', 1),
+('Pomegranate Juice', 'Tipco', 'Beverages', 95.00, 30, '2026-11-20', 1),
+('Orange Juice with Pulp', 'Malee', 'Beverages', 70.00, 55, '2026-11-28', 1),
+('Coconut Water 100%', 'Malee', 'Beverages', 65.00, 80, '2027-02-28', 1),
+('Mangosteen Drink', 'Tipco', 'Beverages', 80.00, 40, '2026-12-01', 1),
+('Coffee Mix 3in1 Plus', 'Nescafe Thailand', 'Beverages', 85.00, 120, '2027-10-10', 1),
+('Black Coffee Sugar Free', 'Birdy', 'Beverages', 25.00, 90, '2027-09-15', 1),
+('Milk Tablet Royal Project', 'Suan Dusit', 'Snacks', 20.00, 200, '2027-08-10', 1),
+('Instant Rice Vermicelli Soup', 'Knorr', 'Noodles', 20.00, 85, '2027-03-30', 1),
+('Yellow Curry Paste', 'Mae Ploy', 'Condiments', 35.00, 60, '2027-10-15', 1),
+('Tom Yum Paste Jar', 'Mae Pranom', 'Condiments', 65.00, 70, '2028-02-20', 1),
+('Pad Thai Sauce Bottle', 'Lobo', 'Condiments', 45.00, 80, '2028-05-10', 1),
+('Satay Seasoning Mix', 'Lobo', 'Condiments', 30.00, 75, '2028-04-12', 1),
+('Larb Seasoning Powder', 'RosDee', 'Condiments', 22.00, 110, '2027-11-05', 1),
+('Nam Tok Seasoning Powder', 'RosDee', 'Condiments', 22.00, 95, '2027-11-06', 1),
+('Chicken Soup Cube', 'RosDee', 'Condiments', 35.00, 150, '2028-01-15', 1),
+('Pork Soup Cube', 'RosDee', 'Condiments', 35.00, 160, '2028-01-15', 1),
+('Shrimp Paste (Kapi)', 'Tra Chang', 'Condiments', 50.00, 40, '2028-06-30', 1),
+('Pickled Garlic Jar', 'Butterfly', 'Condiments', 55.00, 35, '2028-09-01', 1),
+('Dried Rice Noodles 500g', 'Wai Wai', 'Grains', 48.00, 70, '2028-11-20', 1),
+('Glass Noodles (Mung Bean)', 'Sonti', 'Grains', 45.00, 90, '2029-03-10', 1),
+('Black Soy Sauce', 'Healthy Boy', 'Condiments', 40.00, 65, '2028-08-12', 1),
+('Plum Sauce', 'Mae Pranom', 'Condiments', 60.00, 50, '2028-03-10', 1),
+('Crispy Squid Snack Seaweed', 'Bento', 'Snacks', 20.00, 130, '2027-05-05', 1),
+('Seaweed Tempura Original', 'Tao Kae Noi', 'Snacks', 55.00, 60, '2027-01-25', 1),
+('Seaweed Tempura Hot Chili', 'Tao Kae Noi', 'Snacks', 55.00, 55, '2027-01-25', 1),
+('Salted Egg Crispy Salmon Skin', 'Italthai', 'Snacks', 150.00, 20, '2026-12-15', 1),
+('Lotus Root Snack BBQ', 'Hand Brand', 'Snacks', 40.00, 45, '2027-04-10', 1),
+('Banana Crisps Salted', 'King Bridge', 'Snacks', 50.00, 50, '2026-10-30', 1),
+('Dried Mango Spicy', 'Sunsweet', 'Snacks', 90.00, 40, '2027-06-01', 1),
+('Jackfruit Chips', 'Chanthaburi', 'Snacks', 110.00, 30, '2026-12-25', 1),
+('Longan Honey Squeeze', 'Doi Kham', 'Spreads', 95.00, 45, '2029-01-01', 1),
+('Butterfly Pea Tea Dried', 'ChaTraMue', 'Beverages', 120.00, 35, '2028-06-15', 1),
+('Oolong Tea Leaves', 'ChaTraMue', 'Beverages', 160.00, 25, '2028-08-20', 1),
+('Instant Rice Porridge Chicken', 'Mama', 'Cereals', 18.00, 115, '2027-03-15', 1),
+('Minced Beef Flavor Noodles', 'Mama', 'Noodles', 15.50, 80, '2027-06-20', 1),
+('Boiled Rice Soup Base', 'RosDee', 'Condiments', 25.00, 70, '2027-12-10', 1),
+('Garlic Pepper Seasoning', 'Lobo', 'Condiments', 28.00, 85, '2028-02-15', 1),
+('Crispy Shallots Fried', 'Hand Brand', 'Condiments', 45.00, 60, '2027-07-15', 1),
+('Fried Garlic Granules', 'Hand Brand', 'Condiments', 45.00, 65, '2027-07-15', 1),
+('Red Ruby Dessert Mix', 'Lobo', 'Sweets', 35.00, 50, '2028-01-20', 1);
+
+SELECT * FROM grocery_items;
+
+4. SHOW CODE OF YOUR DBCONFIG.PHP FILE 
+
+<?php
+// Database configuration for Thai Grocery Store
+$host = 'localhost';
+$dbname = 'thai_grocery_store';
+$username = 'root';
+$password = '';
+
+try {
+    // Establish connection to MySQL database using PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    
+    // Set PDO error mode to exception for handling connection errors
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+} catch (PDOException $e) {
+    // Handle database connection failure gracefully
+    die("Connection failed: " . $e->getMessage());
+}
+?>
+
+5.SHOW CODE DEMONSTRATING FETCH_ALL(). USE PRINT_R(). WITH “<pre>” TAG IN BETWEEN. 
+
+<?php
+// Include the database configuration file to establish connection
+require_once 'dbconfig.php';
+
+// Prepare and execute a query to retrieve grocery items
+$stmt = $pdo->query("SELECT * FROM grocery_items LIMIT 5");
+
+// Fetch all rows as an associative array using fetchAll()
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Display the multi-dimensional array wrapped in <pre> tags with print_r()
+echo "<pre>";
+print_r($items);
+echo "</pre>";
+?>
+
+6.SHOW CODE DEMONSTRATING HOW FETCH() IS USED. USE PRINT_R(). WITH “<pre>” TAG IN BETWEEN. 
+
+<?php
+// Include the database configuration file to establish connection
+require_once 'dbconfig.php';
+
+// Prepare a query to select a single grocery item by its ID
+$stmt = $pdo->prepare("SELECT * FROM grocery_items WHERE item_id = ?");
+
+// Execute the query passing the specific item ID
+$stmt->execute([1]);
+
+// Fetch a single row as an associative array using fetch()
+$singleItem = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Display the single record wrapped in <pre> tags with print_r()
+echo "<pre>";
+print_r($singleItem);
+echo "</pre>";
+?>
+
+7.SHOW CODE DEMONSTRATING INSERTION OF RECORD TO YOUR DATABASE
+
+<?php
+// Include the database configuration file
+require_once 'dbconfig.php';
+
+try {
+    // Prepare an INSERT SQL statement with placeholders for security
+    $sql = "INSERT INTO grocery_items (item_name, brand_name, category, price, quantity, expiration_date, is_available) 
+            VALUES (:item_name, :brand_name, :category, :price, :quantity, :expiration_date, :is_available)";
+    
+    $stmt = $pdo->prepare($sql);
+
+    // Execute the statement passing a new authentic Thai grocery item
+    $stmt->execute([
+        'item_name' => 'Thai Crispy Coconut Rolls',
+        'brand_name' => 'Siam',
+        'category' => 'Snacks',
+        'price' => 75.00,
+        'quantity' => 100,
+        'expiration_date' => '2027-12-31',
+        'is_available' => 1
+    ]);
+
+    echo "New Thai grocery item successfully inserted!";
+
+} catch (PDOException $e) {
+    // Handle any insertion errors
+    echo "Insertion failed: " . $e->getMessage();
+}
+?>
+
+8.SHOW CODE DEMONSTRATING DELETION OF RECORD TO YOUR DATABASE
+
+<?php
+// Include the database configuration file
+require_once 'dbconfig.php';
+
+try {
+    // Prepare a DELETE SQL statement based on item ID
+    $sql = "DELETE FROM grocery_items WHERE item_id = :item_id";
+    $stmt = $pdo->prepare($sql);
+
+    // Execute the deletion statement for a specific item (e.g., ID 100)
+    $stmt->execute(['item_id' => 100]);
+
+    echo "Grocery item successfully deleted from the database!";
+
+} catch (PDOException $e) {
+    // Handle deletion errors
+    echo "Deletion failed: " . $e->getMessage();
+}
+?>
+
+9.SHOW CODE DEMONSTRATING UPDATING OF RECORD FROM YOUR DATABASE
+
+<?php
+// Include the database configuration file
+require_once 'dbconfig.php';
+
+try {
+    // Prepare an UPDATE SQL statement to modify price and quantity
+    $sql = "UPDATE grocery_items SET price = :price, quantity = :quantity WHERE item_id = :item_id";
+    $stmt = $pdo->prepare($sql);
+
+    // Execute the update with new values for item_id 1
+    $stmt->execute([
+        'price' => 18.50,
+        'quantity' => 120,
+        'item_id' => 1
+    ]);
+
+    echo "Grocery item successfully updated!";
+
+} catch (PDOException $e) {
+    // Handle update errors
+    echo "Update failed: " . $e->getMessage();
+}
+?>
+
+10.SHOW CODE DEMONSTRATING AN SQL QUERY’S RESULT SET IS RENDERED ON AN HTML TABLE
+
+<?php
+// Include the database configuration file
+require_once 'dbconfig.php';
+
+// Fetch a result set of grocery items from the database
+$stmt = $pdo->query("SELECT * FROM grocery_items LIMIT 10");
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thai Grocery Store Inventory</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }
+        th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h2>Thai Grocery Store Inventory Table</h2>
+    
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Item Name</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        
+        <!-- Loop through the SQL result set to render rows in the HTML table -->
+        <?php foreach ($items as $item): ?>
+        <tr>
+            <td><?php echo htmlspecialchars($item['item_id']); ?></td>
+            <td><?php echo htmlspecialchars($item['item_name']); ?></td>
+            <td><?php echo htmlspecialchars($item['brand_name']); ?></td>
+            <td><?php echo htmlspecialchars($item['category']); ?></td>
+            <td><?php echo htmlspecialchars($item['price']); ?></td>
+            <td><?php echo htmlspecialchars($item['quantity']); ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+
+</body>
+</html>
+
 
