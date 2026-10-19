@@ -1,0 +1,120 @@
+-- Table 1: The 'One' side (Car Rental Agency)
+CREATE TABLE agencies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    phone VARCHAR(20)
+);
+
+-- Table 2: The 'Many' side (Vehicles)
+CREATE TABLE vehicles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    agency_id INT NOT NULL,
+    make VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    year INT NOT NULL,
+    plate_number VARCHAR(20) UNIQUE NOT NULL,
+    status VARCHAR(20) DEFAULT 'Available',
+    FOREIGN KEY (agency_id) REFERENCES agencies(id) ON DELETE CASCADE
+);
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+FATHER ENTITY
+
+INSERT INTO agencies (name, location, phone) VALUES 
+('Apex Car Rentals', 'Downtown Hub, Building A', '555-0192'),
+('Velocity Fleet', 'Airport Terminal 2', '555-0143'),
+('EcoDrive Rentals', 'Green Plaza Suite 10', '555-0177');
+
+-- Run this right after to show they were added successfully:
+SELECT * FROM agencies;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+DELETE FROM agencies WHERE id = 3;
+
+-- Run this right after to show it is gone:
+SELECT * FROM agencies;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+UPDATE agencies 
+SET location = 'Airport International Terminal 1', phone = '555-9999' 
+WHERE id = 2;
+
+-- Run this right after to show the updated data:
+SELECT * FROM agencies;
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHILDREN ENTITY
+
+
+INSERT INTO vehicles (agency_id, make, model, year, plate_number, status) VALUES 
+(1, 'Toyota', 'Camry', 2023, 'XYZ-1234', 'Available'),
+(1, 'Tesla', 'Model 3', 2024, 'ELEC-777', 'Available'),
+(2, 'Ford', 'Explorer', 2022, 'SUV-5566', 'Available');
+
+-- Run this right after to show they were added successfully:
+SELECT * FROM vehicles;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DELETE FROM vehicles WHERE id = 3;
+
+-- Run this right after to show it is gone:
+SELECT * FROM vehicles;
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+UPDATE vehicles 
+SET status = 'Rented' 
+WHERE id = 1;
+
+-- Run this right after to show the updated data:
+SELECT * FROM vehicles;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
