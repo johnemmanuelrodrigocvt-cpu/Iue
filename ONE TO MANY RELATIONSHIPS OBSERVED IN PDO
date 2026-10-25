@@ -1,0 +1,737 @@
+config  
+      database.php
+
+
+<?php
+$host = 'localhost';
+$dbname = 'one_to_many_pdo';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password
+    );
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+?>
+---------------------------------------------------------------------------------
+
+Developers.php
+
+
+<?php
+require_once 'config/database.php';
+
+$message = '';
+
+// Add a developer
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_developer'])) {
+    $full_name = trim($_POST['full_name']);
+    $email = trim($_POST['email']);
+    $specialty = trim($_POST['specialty']);
+
+    if ($full_name !== '' && $email !== '' && $specialty !== '') {
+        try {
+            $sql = "INSERT INTO developers (full_name, email, specialty)
+                    VALUES (:full_name, :email, :specialty)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':full_name' => $full_name,
+                ':email' => $email,
+                ':specialty' => $specialty
+            ]);
+
+            $message = 'Developer added successfully!';
+        } catch (PDOException $e) {
+            $message = 'Error adding developer. Check whether the email is already used.';
+        }
+    } else {
+        $message = 'Please fill in all fields.';
+    }
+}
+
+
+ // Update a developer
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_developer'])) {
+    $id = (int) $_POST['id'];
+    $full_name = trim($_POST['full_name']);
+    $email = trim($_POST['email']);
+    $specialty = trim($_POST['specialty']);
+
+    if ($id > 0 && $full_name !== '' && $email !== '' && $specialty !== '') {
+        try {
+            $sql = "UPDATE developers
+                    SET full_name = :full_name,
+                        email = :email,
+                        specialty = :specialty
+                    WHERE id = :id";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':full_name' => $full_name,
+                ':email' => $email,
+                ':specialty' => $specialty,
+                ':id' => $id
+            ]);
+
+            $message = 'Developer updated successfully!';
+        } catch (PDOException $e) {
+            $message = 'Error updating developer. Check whether the email is already used.';
+        }
+    } else {
+        $message = 'Please fill in all fields.';
+    }
+}
+
+
+ // Delete a developer
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_developer'])) {
+    $id = (int) ($_POST['id'] ?? 0);
+
+    if ($id > 0) {
+        try {
+            $stmt = $pdo->prepare(
+                "DELETE FROM developers WHERE id = :id"
+            );
+            $stmt->execute([':id' => $id]);
+
+            if ($stmt->rowCount() > 0) {
+                $message = 'Developer deleted successfully!';
+            } else {
+                $message = 'Developer not found.';
+            }
+        } catch (PDOException $e) {
+            $message = 'Error deleting developer. They may still have related projects.';
+        }
+    } else {
+        $message = 'Invalid developer ID.';
+    }
+}
+
+
+// Get all developers
+$stmt = $pdo->query("SELECT * FROM developers ORDER BY id DESC");
+$developers = $stmt->fetchAll();
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Developers</title>
+</head>
+<body>
+    <h1>Manage Developers</h1>
+
+    <p>
+        <a href="index.php">Home</a> |
+        <a href="projects.php">Manage Projects</a>
+    </p>
+
+    <?php if ($message !== ''): ?>
+        <p><?= htmlspecialchars($message) ?></p>
+    <?php endif; ?>
+
+    <h2>Add Developer</h2>
+
+    <form method="POST">
+        <label>Full Name:</label><br>
+        <input type="text" name="full_name" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Specialty:</label><br>
+        <input type="text" name="specialty" required><br><br>
+
+        <button type="submit" name="add_developer">Add Developer</button>
+    </form>
+
+    <h2>Developer List</h2>
+
+    <?php if (count($developers) > 0): ?>
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Specialty</th>
+                <th>Date Added</th>
+                <th>Actions</th>
+            </tr>
+
+            <?php foreach ($developers as $developer): ?>
+             
+<tr>
+    <td><?= htmlspecialchars((string) $developer['id']) ?></td>
+    <td><?= htmlspecialchars($developer['full_name']) ?></td>
+    <td><?= htmlspecialchars($developer['email']) ?></td>
+    <td><?= htmlspecialchars($developer['specialty']) ?></td>
+    <td><?= htmlspecialchars($developer['created_at']) ?></td>
+    <td>
+        <form method="GET" action="edit_developer.php">
+            <input type="hidden" name="id"
+                   value="<?= (int) $developer['id'] ?>">
+            <button type="submit">Edit</button>
+        </form>
+
+        <form method="POST"
+              onsubmit="return confirm('Are you sure you want to delete this developer and their projects?');">
+            <input type="hidden" name="id"
+                   value="<?= (int) $developer['id'] ?>">
+            <button type="submit" name="delete_developer">
+                Delete
+            </button>
+        </form>
+    </td>
+</tr>
+
+            <?php endforeach; ?>
+        </table>
+    <?php else: ?>
+        <p>No developers found. Add your first developer above.</p>
+    <?php endif; ?>
+</body>
+</html>
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------
+
+
+
+
+
+
+edit_developer.php
+
+
+
+
+<?php
+require_once 'config/database.php';
+
+// Get the developer ID from the URL
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($id <= 0) {
+    die('Invalid developer ID.');
+}
+
+// Find the developer in the database
+$stmt = $pdo->prepare(
+    "SELECT * FROM developers WHERE id = :id"
+);
+$stmt->execute([':id' => $id]);
+$developer = $stmt->fetch();
+
+if (!$developer) {
+    die('Developer not found.');
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Developer</title>
+</head>
+<body>
+
+    <h1>Edit Developer</h1>
+
+    <form action="developers.php" method="POST">
+
+        <input
+            type="hidden"
+            name="id"
+            value="<?= (int) $developer['id'] ?>"
+        >
+
+        <label for="full_name">Full Name:</label><br>
+        <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            value="<?= htmlspecialchars($developer['full_name']) ?>"
+            required
+        ><br><br>
+
+        <label for="email">Email:</label><br>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            value="<?= htmlspecialchars($developer['email']) ?>"
+            required
+        ><br><br>
+
+        <label for="specialty">Specialty:</label><br>
+        <input
+            type="text"
+            id="specialty"
+            name="specialty"
+            value="<?= htmlspecialchars($developer['specialty']) ?>"
+            required
+        ><br><br>
+
+        <button type="submit" name="update_developer">
+            Save Changes
+        </button>
+
+    </form>
+
+    <br>
+    <a href="developers.php">Cancel and Go Back</a>
+
+</body>
+</html>
+
+
+---------------------------------------------------------------------------------
+
+edit_project.php
+
+
+<?php
+require_once 'config/database.php';
+
+// Get the project ID from the URL
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($id <= 0) {
+    die('Invalid project ID.');
+}
+
+// Get the project details
+$stmt = $pdo->prepare(
+    "SELECT * FROM projects WHERE id = :id"
+);
+$stmt->execute([':id' => $id]);
+$project = $stmt->fetch();
+
+if (!$project) {
+    die('Project not found.');
+}
+
+// Get developers for the dropdown
+$stmt = $pdo->query(
+    "SELECT id, full_name FROM developers ORDER BY full_name ASC"
+);
+$developers = $stmt->fetchAll();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Project</title>
+</head>
+<body>
+
+    <h1>Edit Project</h1>
+
+    <form action="projects.php" method="POST">
+
+        <input
+            type="hidden"
+            name="id"
+            value="<?= (int) $project['id'] ?>"
+        >
+
+        <label for="developer_id">Developer:</label><br>
+        <select id="developer_id" name="developer_id" required>
+            <?php foreach ($developers as $developer): ?>
+                <option
+                    value="<?= (int) $developer['id'] ?>"
+                    <?= (int) $developer['id'] === (int) $project['developer_id']
+                        ? 'selected' : '' ?>
+                >
+                    <?= htmlspecialchars($developer['full_name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <br><br>
+
+        <label for="project_name">Project Name:</label><br>
+        <input
+            type="text"
+            id="project_name"
+            name="project_name"
+            value="<?= htmlspecialchars($project['project_name']) ?>"
+            required
+        >
+        <br><br>
+
+        <label for="client_name">Client Name:</label><br>
+        <input
+            type="text"
+            id="client_name"
+            name="client_name"
+            value="<?= htmlspecialchars($project['client_name']) ?>"
+            required
+        >
+        <br><br>
+
+        <label for="status">Status:</label><br>
+        <select id="status" name="status" required>
+            <?php
+            $statuses = ['Planning', 'In Progress', 'Completed'];
+            foreach ($statuses as $status):
+            ?>
+                <option
+                    value="<?= htmlspecialchars($status) ?>"
+                    <?= $project['status'] === $status ? 'selected' : '' ?>
+                >
+                    <?= htmlspecialchars($status) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <br><br>
+
+        <label for="budget">Budget:</label><br>
+        <input
+            type="number"
+            id="budget"
+            name="budget"
+            min="0"
+            step="0.01"
+            value="<?= htmlspecialchars((string) $project['budget']) ?>"
+            required
+        >
+        <br><br>
+
+        <button type="submit" name="update_project">
+            Save Changes
+        </button>
+
+    </form>
+
+    <p><a href="projects.php">Cancel and Go Back</a></p>
+
+</body>
+</html>
+
+
+
+---------------------------------------------------------------------------------
+
+index.php
+
+
+<?php
+require_once 'config/database.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-to-Many PDO Project</title>
+</head>
+<body>
+    <h1>One-to-Many Relationship Project</h1>
+    <p>Welcome to my PDO project!</p>
+    <p>Database connection successful.</p>
+</body>
+</html>
+
+
+
+---------------------------------------------------------------------------------
+
+project.php
+
+
+
+<?php
+require_once 'config/database.php';
+
+$message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['delete_project'])) {
+
+    $id = (int) ($_POST['id'] ?? 0);
+
+    if ($id > 0) {
+        try {
+            $stmt = $pdo->prepare(
+                "DELETE FROM projects WHERE id = :id"
+            );
+
+            $stmt->execute([':id' => $id]);
+
+            if ($stmt->rowCount() > 0) {
+                $message = 'Project deleted successfully!';
+            } else {
+                $message = 'Project not found.';
+            }
+
+        } catch (PDOException $e) {
+            $message = 'Error deleting project.';
+        }
+    } else {
+        $message = 'Invalid project ID.';
+    }
+}
+
+
+// Get developers for the dropdown menu
+$stmt = $pdo->query(
+    "SELECT id, full_name FROM developers ORDER BY full_name ASC"
+);
+$developers = $stmt->fetchAll();
+
+// Add a project
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['add_project'])) {
+
+    $developer_id = (int) ($_POST['developer_id'] ?? 0);
+    $project_name = trim($_POST['project_name'] ?? '');
+    $client_name = trim($_POST['client_name'] ?? '');
+    $status = $_POST['status'] ?? 'Planning';
+    $budget = $_POST['budget'] ?? '';
+
+    $valid_statuses = ['Planning', 'In Progress', 'Completed'];
+
+    if (
+        $developer_id > 0 &&
+        $project_name !== '' &&
+        $client_name !== '' &&
+        is_numeric($budget) &&
+        (float) $budget >= 0 &&
+        in_array($status, $valid_statuses, true)
+    ) {
+        try {
+            $sql = "INSERT INTO projects
+                    (developer_id, project_name, client_name, status, budget)
+                    VALUES
+                    (:developer_id, :project_name, :client_name, :status, :budget)";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':developer_id' => $developer_id,
+                ':project_name' => $project_name,
+                ':client_name' => $client_name,
+                ':status' => $status,
+                ':budget' => $budget
+            ]);
+
+            $message = 'Project added successfully!';
+        } catch (PDOException $e) {
+            $message = 'Could not add project. Please check the developer and entered details.';
+        }
+    } else {
+        $message = 'Please enter valid information in every field.';
+    }
+}
+
+// Get all projects with their developer names
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['update_project'])) {
+
+    $id = (int) ($_POST['id'] ?? 0);
+    $developer_id = (int) ($_POST['developer_id'] ?? 0);
+    $project_name = trim($_POST['project_name'] ?? '');
+    $client_name = trim($_POST['client_name'] ?? '');
+    $status = $_POST['status'] ?? '';
+    $budget = $_POST['budget'] ?? '';
+
+    $valid_statuses = ['Planning', 'In Progress', 'Completed'];
+
+    if (
+        $id > 0 &&
+        $developer_id > 0 &&
+        $project_name !== '' &&
+        $client_name !== '' &&
+        is_numeric($budget) &&
+        (float) $budget >= 0 &&
+        in_array($status, $valid_statuses, true)
+    ) {
+        try {
+            $sql = "UPDATE projects
+                    SET developer_id = :developer_id,
+                        project_name = :project_name,
+                        client_name = :client_name,
+                        status = :status,
+                        budget = :budget
+                    WHERE id = :id";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':developer_id' => $developer_id,
+                ':project_name' => $project_name,
+                ':client_name' => $client_name,
+                ':status' => $status,
+                ':budget' => $budget,
+                ':id' => $id
+            ]);
+
+            $message = 'Project updated successfully!';
+        } catch (PDOException $e) {
+            $message = 'Error updating project. Please check the entered details.';
+        }
+    } else {
+        $message = 'Please enter valid information in every field.';
+    }
+}
+
+$sql = "SELECT
+            projects.id,
+            projects.project_name,
+            projects.client_name,
+            projects.status,
+            projects.budget,
+            projects.created_at,
+            developers.full_name AS developer_name
+        FROM projects
+        INNER JOIN developers
+            ON projects.developer_id = developers.id
+        ORDER BY projects.id DESC";
+
+$stmt = $pdo->query($sql);
+$projects = $stmt->fetchAll();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Projects</title>
+</head>
+<body>
+
+    <h1>Manage Projects</h1>
+
+    <p>
+        <a href="index.php">Home</a> |
+        <a href="developers.php">Manage Developers</a>
+    </p>
+
+    <?php if ($message !== ''): ?>
+        <p><?= htmlspecialchars($message) ?></p>
+    <?php endif; ?>
+
+    <h2>Add Project</h2>
+
+    <form method="POST" action="projects.php">
+
+        <label for="developer_id">Developer:</label><br>
+        <select id="developer_id" name="developer_id" required>
+            <option value="">Select a developer</option>
+            <?php foreach ($developers as $developer): ?>
+                <option value="<?= (int) $developer['id'] ?>">
+                    <?= htmlspecialchars($developer['full_name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <br><br>
+
+        <label for="project_name">Project Name:</label><br>
+        <input type="text" id="project_name" name="project_name" required>
+        <br><br>
+
+        <label for="client_name">Client Name:</label><br>
+        <input type="text" id="client_name" name="client_name" required>
+        <br><br>
+
+        <label for="status">Status:</label><br>
+        <select id="status" name="status" required>
+            <option value="Planning">Planning</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+        <br><br>
+
+        <label for="budget">Budget:</label><br>
+        <input
+            type="number"
+            id="budget"
+            name="budget"
+            min="0"
+            step="0.01"
+            required
+        >
+        <br><br>
+
+        <button type="submit" name="add_project">Add Project</button>
+
+    </form>
+
+    <h2>Project List</h2>
+
+    <?php if (count($projects) > 0): ?>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Project Name</th>
+                    <th>Client</th>
+                    <th>Developer</th>
+                    <th>Status</th>
+                    <th>Budget</th>
+                    <th>Date Added</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+           
+<?php foreach ($projects as $project): ?>
+    <tr>
+        <td><?= (int) $project['id'] ?></td>
+        <td><?= htmlspecialchars($project['project_name']) ?></td>
+        <td><?= htmlspecialchars($project['client_name']) ?></td>
+        <td><?= htmlspecialchars($project['developer_name']) ?></td>
+        <td><?= htmlspecialchars($project['status']) ?></td>
+        <td><?= number_format((float) $project['budget'], 2) ?></td>
+        <td><?= htmlspecialchars($project['created_at']) ?></td>
+
+        <td>
+            <form method="GET" action="edit_project.php">
+                <input type="hidden" name="id"
+                       value="<?= (int) $project['id'] ?>">
+                <button type="submit">Edit</button>
+            </form>
+
+            <form method="POST" action="projects.php"
+                  onsubmit="return confirm('Are you sure you want to delete this project?');">
+                <input type="hidden" name="id"
+                       value="<?= (int) $project['id'] ?>">
+                <button type="submit" name="delete_project">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
+
+    <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>No projects found yet. Add your first project above.</p>
+    <?php endif; ?>
+
+</body>
+</html>
+
+
+
